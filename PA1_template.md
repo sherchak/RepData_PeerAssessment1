@@ -11,11 +11,13 @@ This assignment makes use of data from a personal activity monitoring device. Th
 
 ##Loading and preprocessing the data
 Load into data the activity data, make sure activity.csv is in your working directory.
-```{r}
+
+```r
 data <- read.csv("C:/Users/Steven/Documents/R/repdata-data-activity/activity.csv", colClasses=c("numeric","POSIXct","numeric"))
 ```
 Find the mean steps for each day
-```{r}
+
+```r
 library(lubridate)
 date=ymd("2012-10-01 Pacific")
 tz(date)="US/Pacific"
@@ -29,7 +31,8 @@ for (iterator in 1:61)
 }
 ```
 Find the mean steps for each time interval each day
-```{r}
+
+```r
 iterator=1
 interval.mean<-numeric(length=472)
 for (iterator in 1:472) 
@@ -39,41 +42,67 @@ for (iterator in 1:472)
     iterator<-iterator+1
 }
 interval.mean[is.nan(interval.mean)]=0
-
 ```
 
 ##What is mean total number of steps taken per day?
 A histogram of the number of steps taken each day ignoring missing data:
-```{r}
+
+```r
 hist(day.step.mean, xlab="Steps", main="Histogram of Steps Taken")
 ```
 
+![plot of chunk unnamed-chunk-4](figure/unnamed-chunk-4-1.png) 
+
 Ignoring the missing data, the mean number of steps per day is given by:
-```{r}
+
+```r
 mean(day.step.mean, na.rm=TRUE)
 ```
+
+```
+## [1] 37.3826
+```
 Ignoring the missing data, the median number of steps per day is given by:
-```{r, }
+
+```r
 median(day.step.mean, na.rm=TRUE)
+```
+
+```
+## [1] 37.37847
 ```
 ##What is the average daily activity pattern?
 A time series plot of the 5-minute interval and the average number of steps taken, averaged across all days:
-```{r,}
+
+```r
 plot(seq(0,2355,5),interval.mean,type='l')
 ```
+
+![plot of chunk unnamed-chunk-7](figure/unnamed-chunk-7-1.png) 
 To find the time interval which has the maximum average step activity:
-```{r,}
+
+```r
 seq(0,2355,5)[which.max(interval.mean)]
+```
+
+```
+## [1] 835
 ```
 This means the 835th 5 minute time interval sees the most activity. 
 
 ##Inputting missing values
 The number of rows in the dataset with NA values is:
-```{r,}
+
+```r
 sum(is.na(data$steps))
 ```
+
+```
+## [1] 2304
+```
 Now a new dataset is created by replacing the missing values in the existing data set with the mean for that time slot:
-```{r,}
+
+```r
 iterator <- 1
 no.missing.data<-data
 for (iterator in 1:17568){
@@ -84,8 +113,8 @@ for (iterator in 1:17568){
 }
 ```
 Find the mean steps for each day from the data without missing values:
-```{r}
 
+```r
 date=ymd("2012-10-01")
 tz(date)="US/Pacific"
 iterator=1
@@ -99,27 +128,42 @@ for (iterator in 1:61)
 ```
 
 A histogram of the number of steps taken each day without any missing data:
-```{r}
+
+```r
 hist(no.missing.day.step.mean, xlab="Steps", main="Histogram of Steps Taken")
 ```
 
+![plot of chunk unnamed-chunk-12](figure/unnamed-chunk-12-1.png) 
+
 Without any missing data, the mean number of steps per day is given by:
-```{r}
+
+```r
 mean(no.missing.day.step.mean, na.rm=TRUE)
 ```
+
+```
+## [1] 37.3826
+```
 Without any missing data, the median number of steps per day is given by:
-```{r, }
+
+```r
 median(no.missing.day.step.mean, na.rm=TRUE)
+```
+
+```
+## [1] 37.3826
 ```
 ##Are there differences in activity patterns between weekdays and weekends?
 Add a new factor column to the data dictating whether the day is a weekday or weekend:
-```{r, }
+
+```r
 day.of.week <- weekdays(no.missing.data$date)
 no.missing.data <- transform(no.missing.data ,daytype = ifelse((day.of.week=="Saturday")|(day.of.week=="Sunday"),"weekend","weekday" ))
 no.missing.data$daytype <-as.factor(no.missing.data$daytype)
 ```
 Find the mean steps for each 5 minute interval from the data without missing values based on weekend or weekday:
-```{r}
+
+```r
 iterator=1
 interval.mean.weekday<-numeric(length=472)
 interval.mean.weekend<-numeric(length=472)
@@ -133,13 +177,14 @@ for (iterator in 1:472)
 }
 interval.mean.weekday[is.nan(interval.mean.weekday)]=0
 interval.mean.weekend[is.nan(interval.mean.weekend)]=0
-
 ```
 Here is a panel plot containing a time series plot of the 5-minute interval and the average number of steps taken, averaged across all weekday days or weekend days. 
-```{r, }
+
+```r
 par(mfrow=c(2,1))
 
 plot(seq(0,2355,5),interval.mean.weekday,type='l',xlab="5 Minute Interval",ylab="Mean Steps",main="Weekday Step Mean by Interval")
 plot(seq(0,2355,5),interval.mean.weekend,type='l',xlab="5 Minute Interval",ylab="Mean Steps",main="Weekend Step Mean by Interval")
-
 ```
+
+![plot of chunk unnamed-chunk-17](figure/unnamed-chunk-17-1.png) 
